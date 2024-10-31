@@ -1,6 +1,8 @@
 import tkinter as tk
+from tkinter import messagebox
 from constants.colors import COLORS
-from components.navbar import Navbar
+
+from controllers.auth import login
 
 class LoginForm(tk.Frame):
   def __init__(self, root):
@@ -15,8 +17,12 @@ class LoginForm(tk.Frame):
     email = self.email_var.get()
     password = self.pass_var.get()
     
-    print(email, password)
+    response, code = login(email=email, password=password)
     
+    if code != 200:
+      messagebox.showerror("Error", response["message"])
+    else:
+      messagebox.showinfo("Sucess", response['message'])
 
   def render(self):
     self.configure(

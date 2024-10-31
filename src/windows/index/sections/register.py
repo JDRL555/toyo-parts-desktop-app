@@ -1,7 +1,8 @@
 import tkinter as tk
+from tkinter import messagebox
 from constants.colors import COLORS
-from components.navbar import Navbar
 
+from controllers.users import create_user
 class RegisterForm(tk.Frame):
   def __init__(self, root):
     super().__init__(root)
@@ -17,7 +18,16 @@ class RegisterForm(tk.Frame):
     email = self.email_var.get()
     password = self.pass_var.get()
     
-    print(fullname, email, password)
+    response, code = create_user({
+      "fullname": fullname,
+      "email": email,
+      "password": password,
+    })
+    
+    if code != 201:
+      messagebox.showerror("Error", response["message"])
+    else:
+      messagebox.showinfo("Sucess", response['message'])
     
 
   def render(self):
