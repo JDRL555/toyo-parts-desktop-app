@@ -2,10 +2,11 @@ import tkinter as tk
 from constants.colors import COLORS
 
 class Navbar(tk.Frame):
-  def __init__(self, root, logo):
+  def __init__(self, root, logo, handle_login):
     super().__init__(root)
     self.root = root
     self.logo = logo
+    self.handle_login = handle_login
     self.propagate(False)
     
   def render(self):
@@ -49,6 +50,7 @@ class Navbar(tk.Frame):
       activebackground=COLORS["secondary"],
       activeforeground=COLORS["primary"],
       cursor="hand2",
+      command=lambda: self.handle_login(True)
     ).grid(row=0, column=0, sticky=tk.E, padx=20)
     
     tk.Button(
@@ -63,6 +65,7 @@ class Navbar(tk.Frame):
       activebackground=COLORS["secondary"],
       activeforeground=COLORS["primary"],
       cursor="hand2",
+      command=lambda: self.handle_login(False)
     ).grid(row=0, column=0, sticky=tk.E, padx=220)
     
     self.grid(row=0, column=0)
