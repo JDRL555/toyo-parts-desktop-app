@@ -1,6 +1,6 @@
 import tkinter as tk
 from constants.colors import COLORS
-from components.navbar import Navbar
+from components.navbar.navbar import Navbar
 
 from .sections.login import LoginForm
 from .sections.register import RegisterForm
@@ -13,8 +13,8 @@ class MainWindow(tk.Frame):
     self.local = local
     self.propagate(False)
     
-    self.login_frame = LoginForm(self.root)
-    self.register_frame = RegisterForm(self.root)
+    self.login_frame = LoginForm(self.root, self.logo)
+    self.register_frame = RegisterForm(self.root, self.handle_login)
     
   def handle_login(self, is_login: bool):
     if is_login:

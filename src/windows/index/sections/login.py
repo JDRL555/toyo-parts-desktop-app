@@ -4,10 +4,13 @@ from constants.colors import COLORS
 
 from controllers.auth import login
 
+from windows.client.client import ClientWindow
+
 class LoginForm(tk.Frame):
-  def __init__(self, root):
+  def __init__(self, root, logo):
     super().__init__(root)
     self.root = root
+    self.logo = logo
     self.propagate(False)
     
     self.email_var = tk.StringVar()
@@ -22,7 +25,11 @@ class LoginForm(tk.Frame):
     if code != 200:
       messagebox.showerror("Error", response["message"])
     else:
-      messagebox.showinfo("Sucess", response['message'])
+      ClientWindow(self.root, self.logo, response["user"]).render()
+      self.root.withdraw()
+      
+      self.email_var.set("")
+      self.pass_var.set("")
 
   def render(self):
     self.configure(

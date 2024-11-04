@@ -4,9 +4,10 @@ from constants.colors import COLORS
 
 from controllers.users import create_user
 class RegisterForm(tk.Frame):
-  def __init__(self, root):
+  def __init__(self, root, handle_login):
     super().__init__(root)
     self.root = root
+    self.handle_login = handle_login
     self.propagate(False)
     
     self.name_var = tk.StringVar()
@@ -28,7 +29,12 @@ class RegisterForm(tk.Frame):
       messagebox.showerror("Error", response["message"])
     else:
       messagebox.showinfo("Sucess", response['message'])
-    
+      self.handle_login(True)
+      
+      self.name_var.set("")
+      self.email_var.set("")
+      self.pass_var.set("")
+      
 
   def render(self):
     self.configure(
