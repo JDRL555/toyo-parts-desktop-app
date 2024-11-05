@@ -1,16 +1,20 @@
 from models.Part import Parts, Categories, Brands
 from utils.database import session
 
-def get_parts_len():
-  return len(session.query(Parts).all())
+def get_parts_len(is_admin = False):
+  parts_query = session.query(Parts)
+  result = parts_query.all() if is_admin else parts_query.filter(Parts.quantity != 0).all()
+  return len(result)
 
-def get_parts(page = 1):
+def get_parts(page = 1, is_admin = False):
   global parts
   per_page = 29
   list_parts = []
   
   try:
-    parts = session.query(Parts).offset((page - 1) * per_page).limit(per_page).all()
+    parts_query = session.query(Parts)
+    result = parts_query if is_admin else parts_query.filter(Parts.quantity != 0)
+    parts = result.offset((page - 1) * per_page).limit(per_page).all()
   except Exception as err:
     print(err)
     return []

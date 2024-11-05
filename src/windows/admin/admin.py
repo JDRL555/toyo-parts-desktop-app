@@ -3,7 +3,7 @@ from constants.colors import COLORS
 from components.navbar.navbar import Navbar
 from components.table.table import Table
 
-class ClientWindow(tk.Toplevel):
+class AdminWindow(tk.Toplevel):
   def __init__(self, root, logo, user):
     super().__init__(root)
     self.root = root
@@ -11,7 +11,7 @@ class ClientWindow(tk.Toplevel):
     self.user = user
     self.propagate(False)
     
-    self.welcome = f"Bievenido, cliente {self.user["fullname"]}"
+    self.welcome = f"Bievenido, admin {self.user["fullname"]}"
     
     self.title = self.welcome
     self.geometry("1200x600")
@@ -37,8 +37,13 @@ class ClientWindow(tk.Toplevel):
     Table(self, {
       "id": ["ID", 40],
       "code": ["Código", 200],
-      "description": ["Descripción", 400],
-      "brand": ["Marca", 300],
+      "description": ["Descripción", 200],
+      "quantity": ["Cantidad", 20],
+      "brand": ["Marca", 200],
+      "cost": ["Costo", 40],
       "price": ["Precio", 40],
-      "category": ["Categoria", 200]
-    }, col_padx=40).render()
+      "inventory": ["Inventario", 40],
+      "category": ["Categoria", 100],
+      "edit": ["Editar", 100],
+      "delete": ["Eliminar", 100],
+    }, col_padx=15, is_admin=True).render()

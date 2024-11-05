@@ -5,6 +5,7 @@ from constants.colors import COLORS
 from controllers.auth import login
 
 from windows.client.client import ClientWindow
+from windows.admin.admin import AdminWindow
 
 class LoginForm(tk.Frame):
   def __init__(self, root, logo):
@@ -25,7 +26,10 @@ class LoginForm(tk.Frame):
     if code != 200:
       messagebox.showerror("Error", response["message"])
     else:
-      ClientWindow(self.root, self.logo, response["user"]).render()
+      if response["user"]["role"] == "administrador":
+        AdminWindow(self.root, self.logo, response["user"]).render()
+      else:
+        ClientWindow(self.root, self.logo, response["user"]).render()
       self.root.withdraw()
       
       self.email_var.set("")
