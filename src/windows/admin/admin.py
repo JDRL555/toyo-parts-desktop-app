@@ -3,6 +3,8 @@ from constants.colors import COLORS
 from components.navbar.navbar import Navbar
 from components.table.table import Table
 
+from windows.form.form import FormWindow
+
 class AdminWindow(tk.Toplevel):
   def __init__(self, root, logo, user):
     super().__init__(root)
@@ -24,8 +26,11 @@ class AdminWindow(tk.Toplevel):
     self.root.deiconify()
     self.destroy()
     
+  def on_create_click(self):
+    FormWindow(self, self.logo).render()
+    self.withdraw()
+    
   def render(self):    
-    # componentes
     Navbar(self, self.logo, self.on_sign_out, is_logged=True).render()
     
     tk.Label(
@@ -34,6 +39,16 @@ class AdminWindow(tk.Toplevel):
       font=("Arial", 18)
     ).grid(row=1, column=0, sticky=tk.NW, padx=10, pady=10)
     
+    tk.Button(
+      self,
+      text="Nueva parte",
+      font=("Arial", 14),
+      borderwidth=0,
+      bg=COLORS["create"],
+      cursor="hand2",
+      command=self.on_create_click
+    ).grid(row=1, column=0, sticky=tk.NE, padx=14, pady=10)
+    
     Table(self, {
       "id": ["ID", 40],
       "code": ["Código", 200],
@@ -41,9 +56,9 @@ class AdminWindow(tk.Toplevel):
       "quantity": ["Cantidad", 20],
       "brand": ["Marca", 200],
       "cost": ["Costo", 40],
-      "price": ["Precio", 40],
+      "price": ["Precio", 50],
       "inventory": ["Inventario", 40],
       "category": ["Categoria", 100],
       "edit": ["Editar", 100],
       "delete": ["Eliminar", 100],
-    }, col_padx=15, is_admin=True).render()
+    }, col_padx=15, is_admin=True, logo=self.logo).render()

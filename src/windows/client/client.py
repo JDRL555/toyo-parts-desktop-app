@@ -39,6 +39,6 @@ class ClientWindow(tk.Toplevel):
       "code": ["Código", 200],
       "description": ["Descripción", 400],
       "brand": ["Marca", 300],
-      "price": ["Precio", 40],
+      "price": ["Precio", 50],
       "category": ["Categoria", 200]
     }, col_padx=40).render()

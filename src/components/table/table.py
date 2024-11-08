@@ -3,15 +3,17 @@ from constants.colors import COLORS
 
 from controllers import parts as parts_controller
 
+
 from .sections.pagination import Pagination
 
 class Table(tk.Frame):
-  def __init__(self, root, columns, col_padx, is_admin = False):
+  def __init__(self, root, columns, col_padx, is_admin = False, logo = None):
     super().__init__(root)
     self.root = root
     self.columns = columns
     self.col_padx = col_padx
     self.is_admin = is_admin
+    self.logo = logo
     self.propagate(False)
     
     self.counter = 1
@@ -99,12 +101,18 @@ class Table(tk.Frame):
           else:
             text = part[col_key]
             
+          if part["quantity"] == 0:
+            color = COLORS["primary"]
+          else:
+            color = "#222"
+            
           row = tk.Label(
             self.table_frame,
-            text=text,
+            text=0 if text == None else text,
             wraplength=list(self.columns.values())[col_index][1],
             justify="center",
             font=("Arial", 11),
+            fg=color
           )
         
         row.grid(row=row_index + 1, column=col_index, sticky=tk.N, pady=5)
@@ -132,54 +140,6 @@ class Table(tk.Frame):
     self.pagination.render()
     
     self.load_table_content()
-    
-  def open_admin_options(self, part):
-    print(part)
-    def on_delete(options):
-      self.counter = 1
-      options.destroy()
-      
-    if self.counter == 1:
-      options = tk.Toplevel(
-        self,
-        width=200,
-        height=100
-      )
-      options.wait_visibility()
-      
-      x = self.winfo_x() + self.winfo_width()//2 - options.winfo_width()//2
-      y = self.winfo_y() + self.winfo_height()//2 - options.winfo_height()//2
-      
-      options.geometry(f"+{x}+{y}")
-      options.grid_propagate(False)
-      options.resizable(False, False)
-      
-      tk.Button(
-        options,
-        text="Editar",
-        borderwidth=0,
-        width=22,
-        font=("Arial", 12),
-        fg=COLORS["secondary"],
-        bg=COLORS["primary"],
-        pady=12,
-        cursor="hand2",
-      ).grid(row=0, column=0)
-      
-      tk.Button(
-        options,
-        text="Eliminar",
-        borderwidth=0,
-        width=22,
-        font=("Arial", 12),
-        fg=COLORS["secondary"],
-        bg=COLORS["primary"],
-        pady=12,
-        cursor="hand2",
-      ).grid(row=1, column=0)
-      
-      self.counter = 2
-      options.protocol("WM_DELETE_WINDOW", lambda: on_delete(options))
     
   def render(self):
     self.grid(row=2, column=0, sticky=tk.N, pady=20)
