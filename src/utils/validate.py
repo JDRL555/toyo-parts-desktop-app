@@ -16,7 +16,7 @@ def validate_part(part: dict):
     return [{
       "field": "ERROR",
       "message": "Faltan campos por llenar"
-    }], None, None
+    }]
   
   errors = []
     
@@ -75,4 +75,4 @@ def validate_part(part: dict):
       "message": "La categoría no existe" 
     })
   
-  return errors, brand, category
+  return errors

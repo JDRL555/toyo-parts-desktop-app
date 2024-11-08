@@ -1,8 +1,11 @@
 import tkinter as tk
+from tkinter import messagebox
+
 from constants.colors import COLORS
 
 from controllers import parts as parts_controller
 
+from windows.form.form import FormWindow
 
 from .sections.pagination import Pagination
 
@@ -15,8 +18,6 @@ class Table(tk.Frame):
     self.is_admin = is_admin
     self.logo = logo
     self.propagate(False)
-    
-    self.counter = 1
     
     self.page = 1
     self.last_page = 1
@@ -66,6 +67,30 @@ class Table(tk.Frame):
     
     self.load_table_content()
     
+  def on_edit(self, row_index: int):
+    key_order = ["id", "code", "description", "quantity", "brand", "cost", "price", "inventory", "category"]
+    
+    part = self.parts[row_index]
+    part["brand"] = part["brand"]["name"]
+    part["category"] = part["category"]["name"]
+    
+    part_sorted = {k: part[k] for k in key_order}
+    
+    FormWindow(self.root, self.logo, self.request_parts, part_sorted).render()
+    self.root.withdraw()
+    
+  def on_delete(self, row_index: int):
+    part = self.parts[row_index]
+    
+    accept = messagebox.askyesno("Seguro?", f"Esta seguro de eliminar {part["description"]}?")
+    
+    if accept:
+      _, code = parts_controller.delete_part(part["id"])
+      if code != 200:
+        messagebox.showerror("ERROR", "La parte no se encontro")
+      else:
+        messagebox.showinfo("ELIMINADO", "La parte fue eliminada exitosamente")
+        self.request_parts(page=1)
         
   def load_table_content(self):
     for widget in self.table_frame.winfo_children():
@@ -80,21 +105,35 @@ class Table(tk.Frame):
       
     for col_index, col_key in enumerate(self.columns.keys()):
       for row_index, part in enumerate(self.parts):
-        global text
-        global row
-        
         if col_key in ["edit", "delete"]:
-          row = tk.Button(
-            self.table_frame,
-            text=self.columns[col_key][0],
-            wraplength=list(self.columns.values())[col_index][1],
-            borderwidth=0,
-            bg=COLORS["primary"],
-            fg=COLORS["secondary"],
-            justify="center",
-            cursor="hand2",
-            font=("Arial", 11),
-          )
+          
+          if col_key == "edit":
+            row = tk.Button(
+              self.table_frame,
+              text=self.columns[col_key][0],
+              wraplength=list(self.columns.values())[col_index][1],
+              borderwidth=0,
+              bg=COLORS["edit"],
+              fg=COLORS["secondary"],
+              justify="center",
+              cursor="hand2",
+              command=lambda idx=row_index: self.on_edit(idx),
+              font=("Arial", 11),
+            )
+          else:
+            row = tk.Button(
+              self.table_frame,
+              text=self.columns[col_key][0],
+              wraplength=list(self.columns.values())[col_index][1],
+              borderwidth=0,
+              bg=COLORS["primary"],
+              fg=COLORS["secondary"],
+              justify="center",
+              cursor="hand2",
+              command=lambda idx=row_index: self.on_delete(idx),
+              font=("Arial", 11),
+            )
+
         else:  
           if col_key in ["brand", "category"]:
             text = part[col_key]["name"]
@@ -121,6 +160,7 @@ class Table(tk.Frame):
     self.pagination.destroy()
     
     self.parts = parts_controller.get_parts(page, is_admin=self.is_admin)
+    self.parts_len = parts_controller.get_parts_len(is_admin=self.is_admin)
     self.page = page
     self.len_last_parts = len(parts_controller.get_parts(page=page - 1, is_admin=self.is_admin)) if page != 1 else 29
     

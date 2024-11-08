@@ -22,12 +22,26 @@ class AdminWindow(tk.Toplevel):
     
     self.protocol("WM_DELETE_WINDOW", lambda: self.root.destroy())
     
+    self.table = Table(self, {
+      "id": ["ID", 40],
+      "code": ["Código", 200],
+      "description": ["Descripción", 200],
+      "quantity": ["Cantidad", 20],
+      "brand": ["Marca", 200],
+      "cost": ["Costo", 40],
+      "price": ["Precio", 50],
+      "inventory": ["Inventario", 40],
+      "category": ["Categoria", 100],
+      "edit": ["Editar", 100],
+      "delete": ["Eliminar", 100],
+    }, col_padx=15, is_admin=True, logo=self.logo)
+    
   def on_sign_out(self):
     self.root.deiconify()
     self.destroy()
     
   def on_create_click(self):
-    FormWindow(self, self.logo).render()
+    FormWindow(self, self.logo, self.table.request_parts).render()
     self.withdraw()
     
   def render(self):    
@@ -49,16 +63,4 @@ class AdminWindow(tk.Toplevel):
       command=self.on_create_click
     ).grid(row=1, column=0, sticky=tk.NE, padx=14, pady=10)
     
-    Table(self, {
-      "id": ["ID", 40],
-      "code": ["Código", 200],
-      "description": ["Descripción", 200],
-      "quantity": ["Cantidad", 20],
-      "brand": ["Marca", 200],
-      "cost": ["Costo", 40],
-      "price": ["Precio", 50],
-      "inventory": ["Inventario", 40],
-      "category": ["Categoria", 100],
-      "edit": ["Editar", 100],
-      "delete": ["Eliminar", 100],
-    }, col_padx=15, is_admin=True, logo=self.logo).render()
+    self.table.render()
