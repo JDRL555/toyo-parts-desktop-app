@@ -3,19 +3,24 @@ from tkinter import messagebox
 
 from constants.colors import COLORS
 
-from controllers import parts as parts_controller
-
 from windows.form.form import FormWindow
 
 from .sections.pagination import Pagination
 
 class Table(tk.Frame):
-  def __init__(self, root, columns, col_padx, is_admin = False, logo = None):
+  def __init__(self, root, columns, col_padx, controller, user = False, logo = None, readonly = False):
     super().__init__(root)
     self.root = root
     self.columns = columns
     self.col_padx = col_padx
-    self.is_admin = is_admin
+    self.controller = controller
+    self.user = user
+    self.is_admin = False
+    
+    if self.user:
+      self.is_admin = user["role"] == "administrador"
+    
+    self.readonly = readonly
     self.logo = logo
     self.propagate(False)
     
@@ -23,12 +28,12 @@ class Table(tk.Frame):
     self.last_page = 1
     self.total = 29 
     self.len_last_parts = 29
-    self.parts = parts_controller.get_parts(is_admin=self.is_admin)
-    self.parts_len = parts_controller.get_parts_len(is_admin=self.is_admin)
+    self.data = self.controller.get(is_admin=self.is_admin)
+    self.data_len = self.controller.get_len(is_admin=self.is_admin)
     
     self.pagination = Pagination(
       self, 
-      self.parts_len,
+      self.data_len,
       self.page, 
       self.total,
       self.last_page,
@@ -68,14 +73,14 @@ class Table(tk.Frame):
     self.load_table_content()
     
   def on_buy(self, row_index: int):
-    part = self.parts[row_index]
+    part = self.data[row_index]
     
     confirm_payment = messagebox.askyesno("Seguro?", f"Seguro que desea comprar {part["description"]}?")
     
     if confirm_payment: 
-      result, code = parts_controller.buy_part(part["id"])
+      result, code = self.controller.buy(part["id"], self.user["id"])
       
-      if code != 200:
+      if code != 201:
         messagebox.showerror("ERROR", result["message"])
       else:
         messagebox.showinfo("COMPRADO", result["message"])
@@ -85,7 +90,7 @@ class Table(tk.Frame):
   def on_edit(self, row_index: int):
     key_order = ["id", "code", "description", "quantity", "brand", "cost", "price", "inventory", "category"]
     
-    part = self.parts[row_index]
+    part = self.data[row_index]
     part["brand"] = part["brand"]["name"]
     part["category"] = part["category"]["name"]
     
@@ -95,12 +100,12 @@ class Table(tk.Frame):
     self.root.withdraw()
     
   def on_delete(self, row_index: int):
-    part = self.parts[row_index]
+    part = self.data[row_index]
     
     accept = messagebox.askyesno("Seguro?", f"Esta seguro de eliminar {part["description"]}?")
     
     if accept:
-      _, code = parts_controller.delete_part(part["id"])
+      _, code = self.controller.delete(part["id"])
       if code != 200:
         messagebox.showerror("ERROR", "La parte no se encontro")
       else:
@@ -119,58 +124,88 @@ class Table(tk.Frame):
       ).grid(row=0, column=index, padx=self.col_padx, sticky=tk.N)
       
     for col_index, col_key in enumerate(self.columns.keys()):
-      for row_index, part in enumerate(self.parts):
-        if col_key in ["edit", "delete", "buy"]:
-          
-          if col_key == "edit":
-            row = tk.Button(
-              self.table_frame,
-              text=self.columns[col_key][0],
-              wraplength=list(self.columns.values())[col_index][1],
-              borderwidth=0,
-              bg=COLORS["edit"],
-              fg=COLORS["secondary"],
-              justify="center",
-              cursor="hand2",
-              command=lambda idx=row_index: self.on_edit(idx),
-              font=("Arial", 11),
-            )
-          elif col_key == "delete":
-            row = tk.Button(
-              self.table_frame,
-              text=self.columns[col_key][0],
-              wraplength=list(self.columns.values())[col_index][1],
-              borderwidth=0,
-              bg=COLORS["primary"],
-              fg=COLORS["secondary"],
-              justify="center",
-              cursor="hand2",
-              command=lambda idx=row_index: self.on_delete(idx),
-              font=("Arial", 11),
-            )
+      for row_index, register in enumerate(self.data):
+        row = None
+        color = "#222"
+        if not self.readonly:
+          if col_key in ["edit", "delete", "buy"]:
+            if col_key == "edit":
+              row = tk.Button(
+                self.table_frame,
+                text=self.columns[col_key][0],
+                wraplength=list(self.columns.values())[col_index][1],
+                borderwidth=0,
+                bg=COLORS["edit"],
+                fg=COLORS["secondary"],
+                justify="center",
+                cursor="hand2",
+                command=lambda idx=row_index: self.on_edit(idx),
+                font=("Arial", 11),
+              )
+            elif col_key == "delete":
+              row = tk.Button(
+                self.table_frame,
+                text=self.columns[col_key][0],
+                wraplength=list(self.columns.values())[col_index][1],
+                borderwidth=0,
+                bg=COLORS["primary"],
+                fg=COLORS["secondary"],
+                justify="center",
+                cursor="hand2",
+                command=lambda idx=row_index: self.on_delete(idx),
+                font=("Arial", 11),
+              )
+            else:
+              row = tk.Button(
+                self.table_frame,
+                text=self.columns[col_key][0],
+                wraplength=list(self.columns.values())[col_index][1],
+                borderwidth=0,
+                bg=COLORS["create"],
+                justify="center",
+                cursor="hand2",
+                command=lambda idx=row_index: self.on_buy(idx),
+                font=("Arial", 11),
+              )
           else:
-            row = tk.Button(
+            if col_key in ["brand", "category"]:
+              text = register[col_key]["name"]
+            elif col_key == "part.code":
+              text = register["part"]["code"]
+            elif col_key == "part.description":
+              text = register["part"]["description"]
+            elif col_key == "user.fullname":
+              text = register["user"]["fullname"]
+            else:
+              text = register[col_key]
+              
+            if register.get("quantity"):
+              if register["quantity"] == 0:
+                color = COLORS["primary"]
+              
+            row = tk.Label(
               self.table_frame,
-              text=self.columns[col_key][0],
+              text=0 if text == None else text,
               wraplength=list(self.columns.values())[col_index][1],
-              borderwidth=0,
-              bg=COLORS["create"],
               justify="center",
-              cursor="hand2",
-              command=lambda idx=row_index: self.on_buy(idx),
               font=("Arial", 11),
+              fg=color
             )
-
-        else:  
+        elif col_key not in ["edit", "delete", "buy"]:
           if col_key in ["brand", "category"]:
-            text = part[col_key]["name"]
+            text = register[col_key]["name"]
+          elif col_key == "part.code":
+            text = register["part"]["code"]
+          elif col_key == "part.description":
+            text = register["part"]["description"]
+          elif col_key == "user.fullname":
+            text = register["user"]["fullname"]
           else:
-            text = part[col_key]
-            
-          if part["quantity"] == 0:
-            color = COLORS["primary"]
-          else:
-            color = "#222"
+            text = register[col_key]
+          
+          if register.get("quantity"):
+            if register["quantity"] == 0:
+              color = COLORS["primary"]
             
           row = tk.Label(
             self.table_frame,
@@ -180,25 +215,24 @@ class Table(tk.Frame):
             font=("Arial", 11),
             fg=color
           )
-        
         row.grid(row=row_index + 1, column=col_index, sticky=tk.N, pady=5)
     
   def request_parts(self, page: int):
     self.pagination.destroy()
     
-    self.parts = parts_controller.get_parts(page, is_admin=self.is_admin)
-    self.parts_len = parts_controller.get_parts_len(is_admin=self.is_admin)
+    self.data = self.controller.get(page, is_admin=self.is_admin)
+    self.data_len = self.controller.get_len(is_admin=self.is_admin)
     self.page = page
-    self.len_last_parts = len(parts_controller.get_parts(page=page - 1, is_admin=self.is_admin)) if page != 1 else 29
+    self.len_last_parts = len(self.controller.get(page=page - 1, is_admin=self.is_admin)) if page != 1 else 29
     
-    division = self.parts_len / 29
-    residuo = self.parts_len % 29
+    division = self.data_len / 29
+    residuo = self.data_len % 29
     self.last_page = int(division) + 1 if residuo != 0 else int(division)
-    self.total = 29 if self.page == 1 else ((self.page - 1) * self.len_last_parts) + len(self.parts)
+    self.total = 29 if self.page == 1 else ((self.page - 1) * self.len_last_parts) + len(self.data)
     
     self.pagination = Pagination(
       self, 
-      self.parts_len,
+      self.data_len,
       self.page, 
       self.total,
       self.last_page,

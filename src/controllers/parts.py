@@ -1,4 +1,5 @@
-from models.Part import Parts, Categories, Brands
+from models.Part import Parts, Categories, Brands, PaymentHistory
+from models.User import Users
 from utils.database import session
 
 def get_parts_len(is_admin = False):
@@ -174,16 +175,25 @@ def delete_part(id):
     "message": "Parte eliminada"
   }, 200
   
-def buy_part(id):
-  part: Parts = session.query(Parts).get(id)
+def buy_part(part_id, user_id):
+  part: Parts = session.query(Parts).get(part_id)
+  user: Users = session.query(Users).get(user_id)
   
   if not part:
     return {
       "message": "Parte no encontrada"
     }, 404
     
+  if not user:
+    return {
+      "message": "Usuario no encontrado"
+    }, 404
+    
   part.quantity -= 1
   
+  payment = PaymentHistory(part_id, user_id)
+  
+  session.add(payment)
   session.commit()
   
   return {

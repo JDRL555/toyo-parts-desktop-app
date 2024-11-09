@@ -2,10 +2,10 @@ import tkinter as tk
 from constants.colors import COLORS
 
 class Pagination(tk.Frame):
-  def __init__(self, root, parts_len, page, total, last_page, request_parts):
+  def __init__(self, root, data_len, page, total, last_page, request_parts):
     super().__init__(root)
     self.root = root
-    self.parts_len = parts_len
+    self.data_len = data_len
     self.page = page
     self.total = total
     self.last_page = last_page
@@ -46,7 +46,7 @@ class Pagination(tk.Frame):
     
     tk.Label(
       self,
-      text=f"{self.total} de {self.parts_len}",
+      text=f"{self.total} de {self.data_len}",
       font=("Arial", 12, "bold"),
       bg=COLORS["primary"],
       fg=COLORS["secondary"],

@@ -1,5 +1,6 @@
 from utils.database import Base
-from sqlalchemy import Column, Integer, String, Float, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey
+from sqlalchemy.sql import func
 
 class Categories(Base):
   __tablename__ = "categories"
@@ -41,3 +42,15 @@ class Parts(Base):
     self.inventory = inventory
     self.brand_id = brand_id
     self.category_id = category_id
+    
+class PaymentHistory(Base):
+  __tablename__ = "payment_history"
+  
+  id = Column(Integer, primary_key=True)
+  part_id = Column(Integer, ForeignKey('parts.id'), nullable=False)
+  user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+  paid_at = Column(DateTime(timezone=True), server_default=func.now())
+  
+  def __init__(self, part_id, user_id):
+    self.part_id = part_id
+    self.user_id = user_id

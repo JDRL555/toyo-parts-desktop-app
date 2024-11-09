@@ -4,6 +4,9 @@ from components.navbar.navbar import Navbar
 from components.table.table import Table
 
 from windows.form.form import FormWindow
+from windows.payments.payments import PaymentsWindow
+
+from utils.controller import Controller
 
 class AdminWindow(tk.Toplevel):
   def __init__(self, root, logo, user):
@@ -11,6 +14,7 @@ class AdminWindow(tk.Toplevel):
     self.root = root
     self.logo = logo
     self.user = user
+    self.controller = Controller()
     self.propagate(False)
     
     self.welcome = f"Bievenido, admin {self.user["fullname"]}"
@@ -23,18 +27,23 @@ class AdminWindow(tk.Toplevel):
     self.protocol("WM_DELETE_WINDOW", lambda: self.root.destroy())
     
     self.table = Table(self, {
-      "id": ["ID", 40],
-      "code": ["Código", 200],
-      "description": ["Descripción", 200],
-      "quantity": ["Cantidad", 20],
-      "brand": ["Marca", 200],
-      "cost": ["Costo", 40],
-      "price": ["Precio", 50],
-      "inventory": ["Inventario", 40],
-      "category": ["Categoria", 100],
-      "edit": ["Editar", 100],
-      "delete": ["Eliminar", 100],
-    }, col_padx=15, is_admin=True, logo=self.logo)
+        "id": ["ID", 40],
+        "code": ["Código", 200],
+        "description": ["Descripción", 200],
+        "quantity": ["Cantidad", 20],
+        "brand": ["Marca", 200],
+        "cost": ["Costo", 40],
+        "price": ["Precio", 50],
+        "inventory": ["Inventario", 40],
+        "category": ["Categoria", 100],
+        "edit": ["Editar", 100],
+        "delete": ["Eliminar", 100],
+      }, 
+      col_padx=15, 
+      controller=self.controller,
+      user=self.user, 
+      logo=self.logo,
+    )
     
   def on_sign_out(self):
     self.root.deiconify()
@@ -44,8 +53,12 @@ class AdminWindow(tk.Toplevel):
     FormWindow(self, self.logo, self.table.request_parts).render()
     self.withdraw()
     
+  def on_payments_click(self):
+    PaymentsWindow(self, self.logo, self.user).render()
+    self.withdraw()
+    
   def render(self):    
-    Navbar(self, self.logo, self.on_sign_out, is_logged=True).render()
+    Navbar(self, self.logo, self.on_sign_out, is_logged=True, handle_payments=self.on_payments_click).render()
     
     tk.Label(
       self,

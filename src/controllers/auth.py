@@ -20,6 +20,7 @@ def login(email, password):
   return {
       "message": "Sesion iniciada correctamente!",
       "user": {
+        "id": user.id,
         "fullname": user.fullname,
         "email": user.email,
         "role": role.name,
