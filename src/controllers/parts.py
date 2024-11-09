@@ -173,3 +173,19 @@ def delete_part(id):
   return {
     "message": "Parte eliminada"
   }, 200
+  
+def buy_part(id):
+  part: Parts = session.query(Parts).get(id)
+  
+  if not part:
+    return {
+      "message": "Parte no encontrada"
+    }, 404
+    
+  part.quantity -= 1
+  
+  session.commit()
+  
+  return {
+    "message": "Parte comprada exitosamente!"
+  }, 200

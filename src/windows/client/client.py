@@ -37,8 +37,9 @@ class ClientWindow(tk.Toplevel):
     Table(self, {
       "id": ["ID", 40],
       "code": ["Código", 200],
-      "description": ["Descripción", 400],
+      "description": ["Descripción", 300],
       "brand": ["Marca", 300],
       "price": ["Precio", 50],
-      "category": ["Categoria", 200]
+      "category": ["Categoria", 200],
+      "buy": ["Comprar", 100]
     }, col_padx=40).render()

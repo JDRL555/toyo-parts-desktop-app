@@ -67,6 +67,21 @@ class Table(tk.Frame):
     
     self.load_table_content()
     
+  def on_buy(self, row_index: int):
+    part = self.parts[row_index]
+    
+    confirm_payment = messagebox.askyesno("Seguro?", f"Seguro que desea comprar {part["description"]}?")
+    
+    if confirm_payment: 
+      result, code = parts_controller.buy_part(part["id"])
+      
+      if code != 200:
+        messagebox.showerror("ERROR", result["message"])
+      else:
+        messagebox.showinfo("COMPRADO", result["message"])
+        
+      self.request_parts(page=1)
+    
   def on_edit(self, row_index: int):
     key_order = ["id", "code", "description", "quantity", "brand", "cost", "price", "inventory", "category"]
     
@@ -105,7 +120,7 @@ class Table(tk.Frame):
       
     for col_index, col_key in enumerate(self.columns.keys()):
       for row_index, part in enumerate(self.parts):
-        if col_key in ["edit", "delete"]:
+        if col_key in ["edit", "delete", "buy"]:
           
           if col_key == "edit":
             row = tk.Button(
@@ -120,7 +135,7 @@ class Table(tk.Frame):
               command=lambda idx=row_index: self.on_edit(idx),
               font=("Arial", 11),
             )
-          else:
+          elif col_key == "delete":
             row = tk.Button(
               self.table_frame,
               text=self.columns[col_key][0],
@@ -131,6 +146,18 @@ class Table(tk.Frame):
               justify="center",
               cursor="hand2",
               command=lambda idx=row_index: self.on_delete(idx),
+              font=("Arial", 11),
+            )
+          else:
+            row = tk.Button(
+              self.table_frame,
+              text=self.columns[col_key][0],
+              wraplength=list(self.columns.values())[col_index][1],
+              borderwidth=0,
+              bg=COLORS["create"],
+              justify="center",
+              cursor="hand2",
+              command=lambda idx=row_index: self.on_buy(idx),
               font=("Arial", 11),
             )
 
