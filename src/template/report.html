@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reporte en PDF</title>
+</head>
+<body>
+  <h1>Reporte de {{ data.report_of }}: {{ data.total }} de {{ data.parts_len }}</h1>
+  <table>
+    <thead>
+      <tr>
+        {% for col in data.cols %}
+          <th>{{ col }}</th> 
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in data.rows %}
+        <tr>
+          {% for key, value in row.items() %}
+            <td>{{ value }}</td>
+          {% endfor %}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>

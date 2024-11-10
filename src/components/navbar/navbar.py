@@ -17,17 +17,10 @@ class Navbar(tk.Frame):
       height=100,
       bg=COLORS["secondary"]
     )
-    
-    logo_frame = tk.Frame(
-      self.root,
-      width=600,
-      height=100,
-      bg=COLORS["secondary"]
-    )
-    logo_frame.grid(row=0, column=0, sticky=tk.NW)
+    self.grid_propagate(False)
     
     logo = tk.Label(
-      logo_frame,
+      self,
       image=self.logo
     )
     logo.grid(row=0, column=0)
@@ -56,7 +49,22 @@ class Navbar(tk.Frame):
           activeforeground=COLORS["primary"],
           cursor="hand2",
           command=lambda: self.handle_payments()
-        ).grid(row=0, column=0, sticky=tk.E, padx=210)
+        ).grid(row=0, column=1, sticky=tk.N, padx=20)
+        
+        tk.Button(
+          buttons_frame,
+          text="Exportar reportes",
+          font=("Arial", 14),
+          borderwidth=0,
+          pady=3,
+          width=20,
+          fg=COLORS["secondary"],
+          bg=COLORS["primary"],
+          activebackground=COLORS["secondary"],
+          activeforeground=COLORS["primary"],
+          cursor="hand2",
+          command=lambda: self.handle_payments()
+        ).grid(row=0, column=0, sticky=tk.W)
       
       tk.Button(
         buttons_frame,
@@ -71,7 +79,7 @@ class Navbar(tk.Frame):
         activeforeground=COLORS["primary"],
         cursor="hand2",
         command=lambda: self.handle()
-      ).grid(row=0, column=0, sticky=tk.E, padx=20)
+      ).grid(row=0, column=2, sticky=tk.E)
     else:
       tk.Button(
         buttons_frame,
@@ -101,6 +109,6 @@ class Navbar(tk.Frame):
         activeforeground=COLORS["primary"],
         cursor="hand2",
         command=lambda: self.handle(False)
-      ).grid(row=0, column=0, sticky=tk.E, padx=220)
+      ).grid(row=0, column=1, sticky=tk.N)
     
-    self.grid(row=0, column=0)
+    self.grid(row=0, column=0, sticky=tk.EW)
