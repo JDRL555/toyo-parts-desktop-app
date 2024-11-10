@@ -12,11 +12,12 @@ class Controller:
     return payment_controller.get_payments_len(is_admin=is_admin)
 
 class PaymentsWindow(tk.Toplevel):
-  def __init__(self, root, logo, user):
+  def __init__(self, root, logo, user, on_close):
     super().__init__(root)
     self.root = root
     self.logo = logo
     self.user = user
+    self.on_close = on_close
     self.controller = Controller()
     self.propagate(False)
     
@@ -25,10 +26,10 @@ class PaymentsWindow(tk.Toplevel):
     self.resizable(False, False)
     self.wm_iconphoto(True, self.logo, self.logo)
     
-    self.protocol("WM_DELETE_WINDOW", self.on_close)
+    self.protocol("WM_DELETE_WINDOW", self.on_close_window)
     
-  def on_close(self):
-    self.root.deiconify()
+  def on_close_window(self):
+    self.on_close()
     self.destroy()
     
   def render(self):    

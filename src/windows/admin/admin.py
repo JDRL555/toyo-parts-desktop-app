@@ -26,25 +26,6 @@ class AdminWindow(tk.Toplevel):
     
     self.protocol("WM_DELETE_WINDOW", lambda: self.root.destroy())
     
-    self.table = Table(self, {
-        "id": ["ID", 40],
-        "code": ["Código", 200],
-        "description": ["Descripción", 200],
-        "quantity": ["Cantidad", 20],
-        "brand": ["Marca", 200],
-        "cost": ["Costo", 40],
-        "price": ["Precio", 50],
-        "inventory": ["Inventario", 40],
-        "category": ["Categoria", 100],
-        "edit": ["Editar", 100],
-        "delete": ["Eliminar", 100],
-      }, 
-      col_padx=15, 
-      controller=self.controller,
-      user=self.user, 
-      logo=self.logo,
-    )
-    
   def on_sign_out(self):
     self.root.deiconify()
     self.destroy()
@@ -53,9 +34,12 @@ class AdminWindow(tk.Toplevel):
     FormWindow(self, self.logo, self.table.request_parts).render()
     self.withdraw()
     
+  def on_close_payments(self):
+    AdminWindow(self.root, self.logo, self.user).render()
+    
   def on_payments_click(self):
-    PaymentsWindow(self, self.logo, self.user).render()
-    self.withdraw()
+    PaymentsWindow(self.root, self.logo, self.user, self.on_close_payments).render()
+    self.destroy()
     
   def render(self):    
     Navbar(self, self.logo, self.on_sign_out, is_logged=True, handle_payments=self.on_payments_click).render()
@@ -76,4 +60,21 @@ class AdminWindow(tk.Toplevel):
       command=self.on_create_click
     ).grid(row=1, column=0, sticky=tk.NE, padx=14, pady=10)
     
-    self.table.render()
+    Table(self, {
+        "id": ["ID", 40],
+        "code": ["Código", 200],
+        "description": ["Descripción", 200],
+        "quantity": ["Cantidad", 20],
+        "brand": ["Marca", 200],
+        "cost": ["Costo", 40],
+        "price": ["Precio", 50],
+        "inventory": ["Inventario", 40],
+        "category": ["Categoria", 100],
+        "edit": ["Editar", 100],
+        "delete": ["Eliminar", 100],
+      }, 
+      col_padx=15, 
+      controller=self.controller,
+      user=self.user, 
+      logo=self.logo,
+    ).render()

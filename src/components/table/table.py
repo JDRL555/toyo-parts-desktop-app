@@ -37,7 +37,7 @@ class Table(tk.Frame):
       self.page, 
       self.total,
       self.last_page,
-      self.request_parts
+      self.request_data
     )
     self.pagination.render()
     
@@ -85,7 +85,7 @@ class Table(tk.Frame):
       else:
         messagebox.showinfo("COMPRADO", result["message"])
         
-      self.request_parts(page=1)
+      self.request_data(page=1)
     
   def on_edit(self, row_index: int):
     key_order = ["id", "code", "description", "quantity", "brand", "cost", "price", "inventory", "category"]
@@ -96,7 +96,7 @@ class Table(tk.Frame):
     
     part_sorted = {k: part[k] for k in key_order}
     
-    FormWindow(self.root, self.logo, self.request_parts, part_sorted).render()
+    FormWindow(self.root, self.logo, self.request_data, part_sorted).render()
     self.root.withdraw()
     
   def on_delete(self, row_index: int):
@@ -110,7 +110,7 @@ class Table(tk.Frame):
         messagebox.showerror("ERROR", "La parte no se encontro")
       else:
         messagebox.showinfo("ELIMINADO", "La parte fue eliminada exitosamente")
-        self.request_parts(page=1)
+        self.request_data(page=1)
         
   def load_table_content(self):
     for widget in self.table_frame.winfo_children():
@@ -179,8 +179,8 @@ class Table(tk.Frame):
             else:
               text = register[col_key]
               
-            if register.get("quantity"):
-              if register["quantity"] == 0:
+            if register.get("quantity") != None:
+              if register.get("quantity") == 0:
                 color = COLORS["primary"]
               
             row = tk.Label(
@@ -217,9 +217,9 @@ class Table(tk.Frame):
           )
         row.grid(row=row_index + 1, column=col_index, sticky=tk.N, pady=5)
     
-  def request_parts(self, page: int):
+  def request_data(self, page: int):
     self.pagination.destroy()
-    
+        
     self.data = self.controller.get(page, is_admin=self.is_admin)
     self.data_len = self.controller.get_len(is_admin=self.is_admin)
     self.page = page
@@ -236,7 +236,7 @@ class Table(tk.Frame):
       self.page, 
       self.total,
       self.last_page,
-      self.request_parts
+      self.request_data
     )
     self.pagination.render()
     
