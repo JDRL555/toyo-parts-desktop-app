@@ -57,19 +57,9 @@ class FormWindow(tk.Toplevel):
       except tk.TclError:
         messagebox.showerror(col, f"{"La" if self.data[col] == "Cantidad" else "La"} {self.data[col]} debe ser numerico")
         return
-    if not self.part:
-      errors = validate_part(part)
-      
-      if len(errors) != 0:
-        for error in errors:
-          messagebox.showerror(error["field"], error["message"])
-        return
-      
-      brand = session.query(Brands).filter_by(name = part["brand"]).first()
-      category = session.query(Categories).filter_by(name = part["category"]).first()
-    else:
-      brand = session.query(Brands).filter_by(name = self.part["brand"]).first()
-      category = session.query(Categories).filter_by(name = self.part["category"]).first()
+    
+    brand = session.query(Brands).filter_by(name = part["brand"]).first()
+    category = session.query(Categories).filter_by(name = part["category"]).first()
 
     part["brand_id"] = brand.id
     part["category_id"] = category.id

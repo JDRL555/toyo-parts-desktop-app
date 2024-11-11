@@ -39,6 +39,15 @@ class AdminWindow(tk.Toplevel):
       "delete": ["Eliminar", 100],
     }
     
+    self.table = Table(
+      self, 
+      self.cols, 
+      col_padx=15, 
+      controller=self.controller,
+      user=self.user, 
+      logo=self.logo,
+    )
+    
     self.welcome = f"Bievenido, admin {self.user["fullname"]}"
     
     self.title = self.welcome
@@ -53,7 +62,7 @@ class AdminWindow(tk.Toplevel):
     self.destroy()
     
   def on_create_click(self):
-    FormWindow(self, self.logo, self.table.request_parts).render()
+    FormWindow(self, self.logo, self.table.request_data).render()
     self.withdraw()
     
   def on_close_payments(self):
@@ -87,11 +96,4 @@ class AdminWindow(tk.Toplevel):
       command=self.on_create_click
     ).grid(row=1, column=0, sticky=tk.NE, padx=14, pady=10)
     
-    Table(
-      self, 
-      self.cols, 
-      col_padx=15, 
-      controller=self.controller,
-      user=self.user, 
-      logo=self.logo,
-    ).render()
+    self.table.render()
