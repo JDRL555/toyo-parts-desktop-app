@@ -5,7 +5,7 @@ import os
 
 class Report():
   def config_pdf(self):
-    path        = r"{}".format(os.environ.get("WKHTMLTOPDF_PATH"))
+    path        = "C:\\wkhtmltopdf\\bin\\wkhtmltopdf.exe"
     self.config = pdfkit.configuration(wkhtmltopdf=path)
 
   def export_pdf(self, data):
@@ -14,6 +14,6 @@ class Report():
     template  = env.get_template("report.html")
     html      = template.render(data)
 
-    pdfkit.from_string(html, "reporte.pdf", configuration=self.config)
+    pdfkit.from_string(html, f"Reporte_{data["report_of"]}.pdf", configuration=self.config)
 
-    return os.path.isfile("reporte.pdf")
+    return os.path.isfile(f"Reporte_{data["report_of"]}.pdf")

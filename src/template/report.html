@@ -5,21 +5,41 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Reporte en PDF</title>
 </head>
+<style>
+  table {
+    border: 0;
+    text-align: center;
+  }
+  
+  thead {
+    background-color: #ec3237;
+    color: white;
+  }
+
+  thead th {
+    padding: 20px;
+    box-sizing: border-box;
+  }
+</style>
 <body>
-  <h1>Reporte de {{ data.report_of }}: {{ data.total }} de {{ data.parts_len }}</h1>
+  <h1>Reporte de {{ report_of }}</h1>
   <table>
     <thead>
       <tr>
-        {% for col in data.cols %}
+        {% for col in cols %}
           <th>{{ col }}</th> 
         {% endfor %}
       </tr>
     </thead>
     <tbody>
-      {% for row in data.rows %}
+      {% for row in rows %}
         <tr>
           {% for key, value in row.items() %}
-            <td>{{ value }}</td>
+            {% if value is mapping %}
+              <td>{{ value.name }}</td>
+            {% else %}
+              <td>{{ value }}</td>
+            {% endif %}
           {% endfor %}
         </tr>
       {% endfor %}

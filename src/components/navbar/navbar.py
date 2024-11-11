@@ -2,13 +2,13 @@ import tkinter as tk
 from constants.colors import COLORS
 
 class Navbar(tk.Frame):
-  def __init__(self, root, logo, handle, is_logged = False, handle_payments = None):
+  def __init__(self, root, logo, handle, is_logged = False, handle_admin = None):
     super().__init__(root)
     self.root = root
     self.logo = logo
     self.handle = handle
     self.is_logged = is_logged
-    self.handle_payments = handle_payments
+    self.handle_admin = handle_admin
     self.propagate(False)
     
   def render(self):
@@ -35,7 +35,7 @@ class Navbar(tk.Frame):
     buttons_frame.grid(row=0, column=0, sticky=tk.NE, pady=30)
     
     if self.is_logged:
-      if self.handle_payments:  
+      if self.handle_admin:  
         tk.Button(
           buttons_frame,
           text="Ver compras realizadas",
@@ -48,7 +48,7 @@ class Navbar(tk.Frame):
           activebackground=COLORS["secondary"],
           activeforeground=COLORS["primary"],
           cursor="hand2",
-          command=lambda: self.handle_payments()
+          command=lambda: self.handle_admin["payments"]()
         ).grid(row=0, column=1, sticky=tk.N, padx=20)
         
         tk.Button(
@@ -63,7 +63,7 @@ class Navbar(tk.Frame):
           activebackground=COLORS["secondary"],
           activeforeground=COLORS["primary"],
           cursor="hand2",
-          command=lambda: self.handle_payments()
+          command=lambda: self.handle_admin["reports"]()
         ).grid(row=0, column=0, sticky=tk.W)
       
       tk.Button(

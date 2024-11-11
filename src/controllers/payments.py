@@ -8,6 +8,24 @@ def get_payments_len(is_admin = False):
   result = payments_query.all() if is_admin else payments_query.filter(PaymentHistory.quantity != 0).all()
   return len(result)
 
+def get_all_payments():
+  payments = session.query(PaymentHistory).all()
+  list_payments = []
+  
+  for payment in payments:
+    part = session.query(Parts).get(payment.part_id)
+    user = session.query(Users).get(payment.user_id)
+
+    list_payments.append({
+      "id": payment.id,
+      "part.code": part.code,
+      "part.description": part.description,
+      "user.fullname": user.fullname,
+      "paid_at": payment.paid_at,
+    })
+    
+  return list_payments
+
 def get_payments(page = 1, is_admin = False):
   global payments
   per_page = 29

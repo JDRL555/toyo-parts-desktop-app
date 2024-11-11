@@ -21,6 +21,14 @@ class PaymentsWindow(tk.Toplevel):
     self.controller = Controller()
     self.propagate(False)
     
+    self.cols = {
+      "id": ["ID", 40],
+      "part.code": ["Código de la parte", 200],
+      "part.description": ["Descripción de la parte", 300],
+      "user.fullname": ["Nombre del cliente", 200],
+      "paid_at": ["Fecha de compra", 200],
+    }
+    
     self.title = "Pagos realizados"
     self.geometry("1200x600")
     self.resizable(False, False)
@@ -42,13 +50,9 @@ class PaymentsWindow(tk.Toplevel):
       font=("Arial", 18)
     ).grid(row=0, column=0, sticky=tk.NW, padx=10, pady=10)
     
-    Table(self, {
-        "id": ["ID", 40],
-        "part.code": ["Código de la parte", 200],
-        "part.description": ["Descripción de la parte", 300],
-        "user.fullname": ["Nombre del cliente", 200],
-        "paid_at": ["Fecha de compra", 200],
-      }, 
+    Table(
+      self,
+      self.cols,
       col_padx=40, 
       controller=self.controller,
       user=self.user,

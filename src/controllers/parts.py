@@ -7,6 +7,34 @@ def get_parts_len(is_admin = False):
   result = parts_query.all() if is_admin else parts_query.filter(Parts.quantity != 0).all()
   return len(result)
 
+def get_all_parts():
+  parts = session.query(Parts).all()
+  list_parts = []
+  
+  for part in parts:
+    brand = session.query(Brands).get(part.brand_id)
+    category = session.query(Categories).get(part.category_id)
+
+    list_parts.append({
+      "id": part.id,
+      "code": part.code,
+      "quantity": part.quantity,
+      "description": part.description,
+      "cost": part.cost,
+      "price": part.price,
+      "inventory": part.inventory,
+      "brand": {
+        "id": brand.id,
+        "name": brand.name,
+      },
+      "category": {
+        "id": category.id,
+        "name": category.name,
+      },
+    })
+    
+  return list_parts
+
 def get_parts(page = 1, is_admin = False):
   global parts
   per_page = 29

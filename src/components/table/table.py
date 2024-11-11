@@ -8,7 +8,16 @@ from windows.form.form import FormWindow
 from .sections.pagination import Pagination
 
 class Table(tk.Frame):
-  def __init__(self, root, columns, col_padx, controller, user = False, logo = None, readonly = False):
+  def __init__(
+    self, 
+    root, 
+    columns, 
+    col_padx, 
+    controller, 
+    user = False, 
+    logo = None, 
+    readonly = False,
+  ):
     super().__init__(root)
     self.root = root
     self.columns = columns
@@ -27,7 +36,7 @@ class Table(tk.Frame):
     self.page = 1
     self.last_page = 1
     self.total = 29 
-    self.len_last_parts = 29
+    self.len_last_registers = 29
     self.data = self.controller.get(is_admin=self.is_admin)
     self.data_len = self.controller.get_len(is_admin=self.is_admin)
     
@@ -223,12 +232,12 @@ class Table(tk.Frame):
     self.data = self.controller.get(page, is_admin=self.is_admin)
     self.data_len = self.controller.get_len(is_admin=self.is_admin)
     self.page = page
-    self.len_last_parts = len(self.controller.get(page=page - 1, is_admin=self.is_admin)) if page != 1 else 29
+    self.len_last_registers = len(self.controller.get(page=page - 1, is_admin=self.is_admin)) if page != 1 else 29
     
     division = self.data_len / 29
     residuo = self.data_len % 29
     self.last_page = int(division) + 1 if residuo != 0 else int(division)
-    self.total = 29 if self.page == 1 else ((self.page - 1) * self.len_last_parts) + len(self.data)
+    self.total = 29 if self.page == 1 else ((self.page - 1) * self.len_last_registers) + len(self.data)
     
     self.pagination = Pagination(
       self, 
